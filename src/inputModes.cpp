@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 
-void printWeightsMatrix(const std::vector<std::vector<int> > &weights)
+void printWeightsMatrix(const std::vector<std::vector<double>> &weights)
 {
   int n = weights.size();
 
@@ -18,7 +18,7 @@ void printWeightsMatrix(const std::vector<std::vector<int> > &weights)
   {
     for (int j = 0; j < n; j++)
     {
-      std::cout << weights[i][j] << " ";
+      std::cout << weights[i][j] << "\t";
     }
     if (dots)
       std::cout << " ...";
@@ -26,13 +26,17 @@ void printWeightsMatrix(const std::vector<std::vector<int> > &weights)
   }
   if (dots)
   {
-    std::cout << ".    .    .    .\n";
-    std::cout << ".    .    .    .\n";
-    std::cout << ".    .    .    .\n\n";
+    for (int i = 0; i < 3; i++)
+    {
+      for (int j = 0; j < maxRowsCols; j++)
+        std::cout << ".\t";
+      std::cout << "\n";
+    }
+    std::cout << "\n\n";
   }
 }
 
-void matrixModeInput(int n, std::vector<std::vector<int> > &weights, std::istream &stream)
+void matrixModeInput(int n, std::vector<std::vector<double>> &weights, std::istream &stream)
 {
   std::cout << "Insert each weight for edge Mij | for i, j = 1..n:" << std::endl;
 
@@ -45,7 +49,7 @@ void matrixModeInput(int n, std::vector<std::vector<int> > &weights, std::istrea
   printWeightsMatrix(weights);
 }
 
-void edgeModeInput(int n, std::vector<std::vector<int> > &weights, std::istream &stream)
+void edgeModeInput(int n, std::vector<std::vector<double>> &weights, std::istream &stream)
 {
   std::cout << "Insert each edge and its weights (xi yi wi) | for i = 1..n:" << std::endl;
 
@@ -53,7 +57,8 @@ void edgeModeInput(int n, std::vector<std::vector<int> > &weights, std::istream 
 
   for (int i = 0; i < expectedEdges; i++)
   {
-    int x, y, w;
+    int x, y;
+    double w;
     stream >> x >> y >> w;
 
     weights[x - 1][y - 1] = w;
@@ -66,7 +71,7 @@ void edgeModeInput(int n, std::vector<std::vector<int> > &weights, std::istream 
   printWeightsMatrix(weights);
 }
 
-void weightsModeInput(int n, std::vector<std::vector<int> > &weights, std::istream &stream)
+void weightsModeInput(int n, std::vector<std::vector<double>> &weights, std::istream &stream)
 {
   std::cout << "Insert each weight of edge ij | for i = 1..n-1 and for j = i+1..n:" << std::endl;
 
@@ -76,7 +81,7 @@ void weightsModeInput(int n, std::vector<std::vector<int> > &weights, std::istre
   {
     for (int j = i + 1; j < n; j++)
     {
-      int w;
+      double w;
       stream >> w;
 
       weights[i][j] = w;

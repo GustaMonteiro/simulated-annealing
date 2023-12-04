@@ -10,7 +10,7 @@
 #include "matching.hpp"
 #include "inputModes.hpp"
 
-std::map<std::string, std::function<void(int, std::vector<std::vector<int>> &, std::istream &)>> inputModes = {
+std::map<std::string, std::function<void(int, std::vector<std::vector<double>> &, std::istream &)>> inputModes = {
     {"--matrix", matrixModeInput},
     {"--edge", edgeModeInput},
     {"--weight", weightsModeInput}};
@@ -59,11 +59,11 @@ int main(int argc, char **argv)
     int n;
     file >> n;
 
-    std::vector<std::vector<int>> weights(n, std::vector<int>(n));
+    std::vector<std::vector<double>> weights(n, std::vector<double>(n));
 
     inputModes[mode](n, weights, file);
 
-    int simulatedAnnealingMinCost = simulatedAnnealing(weights);
+    double simulatedAnnealingMinCost = simulatedAnnealing(weights);
     std::cout << "Minimum cost matching with simulated annealing is: " << simulatedAnnealingMinCost << std::endl;
 
     file.close();
@@ -75,11 +75,11 @@ int main(int argc, char **argv)
   std::cout << "Insert the number of vertices (n): ";
   std::cin >> n;
 
-  std::vector<std::vector<int>> weights(n, std::vector<int>(n));
+  std::vector<std::vector<double>> weights(n, std::vector<double>(n));
 
   inputModes[mode](n, weights, std::cin);
 
-  int simulatedAnnealingMinCost = simulatedAnnealing(weights);
+  double simulatedAnnealingMinCost = simulatedAnnealing(weights);
   std::cout << "Minimum cost matching with simulated annealing is: " << simulatedAnnealingMinCost << std::endl;
 
   return 0;

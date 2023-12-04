@@ -1,4 +1,4 @@
 #pragma once
 #include <vector>
 
-int simulatedAnnealing(const std::vector<std::vector<int>> &weights);
+double simulatedAnnealing(const std::vector<std::vector<double>> &weights);
