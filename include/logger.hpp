@@ -9,7 +9,7 @@ private:
   static std::string createLogFile(std::string logFileName = "")
   {
     if (logFileName == "")
-      logFileName = "resultLogs.csv";
+      logFileName = "../resultLogs.csv";
     if (std::filesystem::exists(logFileName))
       return logFileName;
 
