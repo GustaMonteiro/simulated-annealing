@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <cmath>
 
 void printWeightsMatrix(const std::vector<std::vector<double>> &weights)
 {
@@ -95,12 +96,42 @@ void weightsModeInput(int n, std::vector<std::vector<double>> &weights, std::ist
   printWeightsMatrix(weights);
 }
 
+struct Point
+{
+  double x, y;
+};
+
+void coordinatesModeInput(int n, std::vector<std::vector<double>> &weights, std::istream &stream)
+{
+  std::cout << "Insert all coordinates (xi yi) | for i = 1..n:" << std::endl;
+
+  std::vector<Point> points(n);
+
+  for (auto &point : points)
+    stream >> point.x >> point.y;
+
+  for (int i = 0; i < n - 1; i++)
+  {
+    for (int j = i + 1; j < n; j++)
+    {
+      double deltaX = points[i].x - points[j].x;
+      double deltaY = points[i].y - points[j].y;
+      double distance = std::sqrt((deltaX * deltaX) + (deltaY * deltaY));
+
+      weights[i][j] = distance;
+      weights[j][i] = distance;
+    }
+  }
+
+  printWeightsMatrix(weights);
+}
+
 void getInputModeManually(std::string &mode)
 {
   while (true)
   {
     int m;
-    std::cout << "Chose the input mode:\n0 - Matrix\n1 - Edge\n2 - Weight\n\n";
+    std::cout << "Chose the input mode:\n0 - Matrix\n1 - Edge\n2 - Weight\n3 - Coordinates\n\n";
     std::cin >> m;
 
     if (m == 0)
@@ -116,6 +147,11 @@ void getInputModeManually(std::string &mode)
     else if (m == 2)
     {
       mode = "--weight";
+      break;
+    }
+    else if (m == 3)
+    {
+      mode = "--coordinates";
       break;
     }
     else

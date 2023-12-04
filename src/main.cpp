@@ -13,14 +13,16 @@
 std::map<std::string, std::function<void(int, std::vector<std::vector<double>> &, std::istream &)>> inputModes = {
     {"--matrix", matrixModeInput},
     {"--edge", edgeModeInput},
-    {"--weight", weightsModeInput}};
+    {"--weight", weightsModeInput},
+    {"--coordinates", coordinatesModeInput}};
 
-std::set<std::string> acceptedModes{"--manual", "--matrix", "--edge", "--weight", "--file"};
+std::set<std::string> acceptedModes{"--manual", "--matrix", "--edge", "--weight", "--coordinates", "--file"};
 
 std::map<int, std::string> modeNumberToString = {
     {0, "--matrix"},
     {1, "--edge"},
-    {2, "--weight"}};
+    {2, "--weight"},
+    {3, "--coordinates"}};
 
 int main(int argc, char **argv)
 {
@@ -48,7 +50,7 @@ int main(int argc, char **argv)
 
     int m;
     file >> m;
-    if (m < 0 || m > 2)
+    if (m < 0 || m > 3)
     {
       std::cout << "Input mode not recognized in file" << std::endl;
       file.close();
