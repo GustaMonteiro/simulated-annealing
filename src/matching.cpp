@@ -12,6 +12,7 @@
 #include <cmath>
 
 #include "defines.hpp"
+#include "resultData.hpp"
 
 std::pair<double, bool> getPermutationCost(const std::vector<int> &permutation, const std::vector<std::vector<double>> &weights)
 {
@@ -44,9 +45,9 @@ void testPermutation(const std::vector<int> &permutation, double *currentMinCost
   }
 }
 
-double simulatedAnnealing(const std::vector<std::vector<double>> &weights, int numIterations)
+ResultData simulatedAnnealing(const std::vector<std::vector<double>> &weights, int numIterations, std::string instancePath, std::string inputMode)
 {
-  auto start = std::chrono::high_resolution_clock::now();
+  ResultData result;
 
   double Tm = 0.0001;
   double T0 = 100;
@@ -59,25 +60,28 @@ double simulatedAnnealing(const std::vector<std::vector<double>> &weights, int n
   if (n % 2 != 0)
     nIsOdd = true;
 
-  std::vector<int> initialPermutation(n);
-  std::iota(initialPermutation.begin(), initialPermutation.end(), 0);
+  std::vector<int> currentBestPermutation(n);
+  std::iota(currentBestPermutation.begin(), currentBestPermutation.end(), 0);
 
   std::random_device rd;
   std::mt19937 g(rd());
 
-  std::shuffle(initialPermutation.begin(), initialPermutation.end(), g);
+  std::shuffle(currentBestPermutation.begin(), currentBestPermutation.end(), g);
 
-  std::vector<int> bestPermutation = initialPermutation;
-  std::vector<int> currentBestPermutation = initialPermutation;
+  std::vector<int> bestPermutation = currentBestPermutation;
 
   double bestPermutationCost = getPermutationCost(bestPermutation, weights).first;
   double currentBestPermutationCost = bestPermutationCost;
-  double firstPermutationCost = bestPermutationCost;
 
-  std::vector<double> allCosts;
-  allCosts.push_back(firstPermutationCost);
+  result.instancePath = instancePath;
+  result.inputMode = inputMode;
+  result.allCalculatedCosts.push_back(bestPermutationCost);
+  result.firstMatchingCost = bestPermutationCost;
+  result.numberOfVertices = n;
 
   double T = T0;
+
+  auto start = std::chrono::high_resolution_clock::now();
 
   while (T > Tm)
   {
@@ -90,7 +94,7 @@ double simulatedAnnealing(const std::vector<std::vector<double>> &weights, int n
       std::iter_swap(neighbor.begin() + l, neighbor.begin() + r);
 
       double neighborCost = getPermutationCost(neighbor, weights).first;
-      allCosts.push_back(neighborCost);
+      result.allCalculatedCosts.push_back(neighborCost);
 
       double delta = neighborCost - currentBestPermutationCost;
 
@@ -124,30 +128,19 @@ double simulatedAnnealing(const std::vector<std::vector<double>> &weights, int n
   if (nIsOdd)
     bestPermutation.pop_back();
 
-  std::cout << "Minimum matching:\n";
-
-  std::cout << "(";
-  for (int i = 0; i < bestPermutation.size(); i += 2)
-  {
-    if (n < 26)
-    {
-      if (i)
-        std::cout << ", ";
-      std::cout << (char)('A' + bestPermutation[i]) << (char)('A' + bestPermutation[i + 1]);
-    }
-    else
-    {
-      if (i)
-        std::cout << " - ";
-      std::cout << bestPermutation[i] << "," << bestPermutation[i + 1];
-    }
-  }
-  std::cout << ")" << std::endl;
-
   auto end = std::chrono::high_resolution_clock::now();
-  std::chrono::duration<double> duration = end - start;
-  std::cout << "Execution time: " << duration.count() << " seconds." << std::endl;
-  std::cout << "First matching cost: " << firstPermutationCost << std::endl;
 
-  return bestPermutationCost;
+  std::chrono::duration<double> duration = end - start;
+
+  result.executionTime = duration.count();
+  result.bestMatching = bestPermutation;
+  result.bestMatchingCost = bestPermutationCost;
+
+  double sum = 0.0;
+  for (auto cost : result.allCalculatedCosts)
+    sum += cost;
+
+  result.calculatedCostsMean = sum / result.allCalculatedCosts.size();
+
+  return result;
 }

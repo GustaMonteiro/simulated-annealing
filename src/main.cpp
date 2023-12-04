@@ -9,6 +9,8 @@
 #include "usage.hpp"
 #include "matching.hpp"
 #include "inputModes.hpp"
+#include "resultData.hpp"
+#include "logger.hpp"
 
 std::map<std::string, std::function<void(int, std::vector<std::vector<double>> &, std::istream &)>> inputModes = {
     {"--matrix", matrixModeInput},
@@ -41,10 +43,12 @@ int main(int argc, char **argv)
     if (argc < 3)
       printUsage(argv[0]);
 
-    std::ifstream file(argv[2]);
+    std::filesystem::path filePath = argv[2];
+
+    std::ifstream file(filePath);
     if (!file.is_open())
     {
-      std::cout << "Not able to open file " << argv[2] << std::endl;
+      std::cout << "Not able to open file " << filePath << std::endl;
       exit(-1);
     }
 
@@ -65,10 +69,12 @@ int main(int argc, char **argv)
 
     inputModes[mode](n, weights, file);
 
-    double simulatedAnnealingMinCost = simulatedAnnealing(weights);
-    std::cout << "Minimum cost matching with simulated annealing is: " << simulatedAnnealingMinCost << std::endl;
-
     file.close();
+
+    ResultData result = simulatedAnnealing(weights, 6000, filePath, mode);
+    result.printInfos();
+
+    Logger::log(result);
 
     return 0;
   }
@@ -81,8 +87,8 @@ int main(int argc, char **argv)
 
   inputModes[mode](n, weights, std::cin);
 
-  double simulatedAnnealingMinCost = simulatedAnnealing(weights);
-  std::cout << "Minimum cost matching with simulated annealing is: " << simulatedAnnealingMinCost << std::endl;
+  ResultData result = simulatedAnnealing(weights);
+  result.printInfos();
 
   return 0;
 }
