@@ -70,12 +70,12 @@ double simulatedAnnealing(const std::vector<std::vector<double>> &weights, int n
   std::vector<int> bestPermutation = initialPermutation;
   std::vector<int> currentBestPermutation = initialPermutation;
 
-  double costBestPermutation = getPermutationCost(bestPermutation, weights).first;
-  double costCurrentBestPermutation = costBestPermutation;
-  double costFirstPermutation = costBestPermutation;
+  double bestPermutationCost = getPermutationCost(bestPermutation, weights).first;
+  double currentBestPermutationCost = bestPermutationCost;
+  double firstPermutationCost = bestPermutationCost;
 
   std::vector<double> allCosts;
-  allCosts.push_back(costFirstPermutation);
+  allCosts.push_back(firstPermutationCost);
 
   double T = T0;
 
@@ -83,26 +83,26 @@ double simulatedAnnealing(const std::vector<std::vector<double>> &weights, int n
   {
     for (int i = 0; i < numIterations; i++)
     {
-      auto v = currentBestPermutation;
+      auto neighbor = currentBestPermutation;
       int l = std::rand() % n;
       int r = std::rand() % n;
 
-      std::iter_swap(v.begin() + l, v.begin() + r);
+      std::iter_swap(neighbor.begin() + l, neighbor.begin() + r);
 
-      double costNeighbor = getPermutationCost(v, weights).first;
-      allCosts.push_back(costNeighbor);
+      double neighborCost = getPermutationCost(neighbor, weights).first;
+      allCosts.push_back(neighborCost);
 
-      double delta = costNeighbor - costCurrentBestPermutation;
+      double delta = neighborCost - currentBestPermutationCost;
 
       if (delta < 0)
       {
-        currentBestPermutation = v;
-        costCurrentBestPermutation = costNeighbor;
+        currentBestPermutation = neighbor;
+        currentBestPermutationCost = neighborCost;
 
-        if (costNeighbor < costBestPermutation)
+        if (neighborCost < bestPermutationCost)
         {
-          bestPermutation = v;
-          costBestPermutation = costNeighbor;
+          bestPermutation = neighbor;
+          bestPermutationCost = neighborCost;
         }
       }
       else
@@ -113,8 +113,8 @@ double simulatedAnnealing(const std::vector<std::vector<double>> &weights, int n
 
         if (prob > randomValue)
         {
-          currentBestPermutation = v;
-          costCurrentBestPermutation = costNeighbor;
+          currentBestPermutation = neighbor;
+          currentBestPermutationCost = neighborCost;
         }
       }
     }
@@ -147,7 +147,7 @@ double simulatedAnnealing(const std::vector<std::vector<double>> &weights, int n
   auto end = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> duration = end - start;
   std::cout << "Execution time: " << duration.count() << " seconds." << std::endl;
-  std::cout << "First matching cost: " << costFirstPermutation << std::endl;
+  std::cout << "First matching cost: " << firstPermutationCost << std::endl;
 
-  return costBestPermutation;
+  return bestPermutationCost;
 }
