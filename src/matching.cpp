@@ -32,19 +32,6 @@ std::pair<double, bool> getPermutationCost(const std::vector<int> &permutation, 
   return {cost, validMatching};
 }
 
-void testPermutation(const std::vector<int> &permutation, double *currentMinCost, std::vector<int> *currentBestPermutation, const std::vector<std::vector<double>> &weights)
-{
-  auto [cost, validMatching] = getPermutationCost(permutation, weights);
-
-  if (validMatching && cost < *currentMinCost)
-  {
-    if (currentMinCost)
-      *currentMinCost = cost;
-    if (currentBestPermutation)
-      *currentBestPermutation = permutation;
-  }
-}
-
 ResultData simulatedAnnealing(const std::vector<std::vector<double>> &weights, int numIterations, std::string instancePath, std::string inputMode)
 {
   ResultData result;
