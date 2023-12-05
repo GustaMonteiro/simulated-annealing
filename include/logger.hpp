@@ -25,9 +25,9 @@ private:
   }
 
 public:
-  static void log(const ResultData &result)
+  static void log(const ResultData &result, std::string logFileName = "")
   {
-    std::ofstream file(createLogFile(), std::ios::app);
+    std::ofstream file(createLogFile(logFileName), std::ios::app);
     if (!file.is_open())
     {
       std::cout << "Could not open log file\n";
